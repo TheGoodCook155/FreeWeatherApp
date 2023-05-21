@@ -10,16 +10,16 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.weather.freeweatherapp.data.wrapper.NetworkResult
+import com.weather.freeweatherapp.data.model.PlacesListItem
 import com.weather.freeweatherapp.presentation.screencomponents.BottomNavigation
 import com.weather.freeweatherapp.presentation.screencomponents.TopBar
-import com.weather.freeweatherapp.presentation.screencomponents.WeeklyWeather
 import com.weather.freeweatherapp.presentation.viewmodel.HourlyViewModel
 import com.weather.freeweatherapp.ui.theme.FreeWeatherAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,13 +34,14 @@ class MainActivity : ComponentActivity() {
                 val viewModel: HourlyViewModel = viewModel()
 
                 val data = viewModel.data.value
+                val places = viewModel.places
 
-                Log.d("retrieved_data", ": MainActivity: ${data}")
+//                Log.d("retrieved_data", ": MainActivity: ${data}")
 
 
-//                App(
-//                    weatherApiResponse
-//                )
+                App(
+                    places
+                )
 
 
             }
@@ -49,9 +50,17 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     @Composable
-    fun App() {
+    fun App(places: MutableState<List<PlacesListItem>>) {
 
         val searchCity = remember{
+            mutableStateOf("")
+        }
+
+        val searchCityLat = remember{
+            mutableStateOf("")
+        }
+
+        val searchCityLng = remember{
             mutableStateOf("")
         }
 
@@ -66,8 +75,10 @@ class MainActivity : ComponentActivity() {
 
                         Icon(imageVector = Icons.Default.Home, contentDescription = "Logo")
 
-                        TopBar(searchCity, modifier = Modifier.fillMaxHeight(0.1f)) {
-
+                        TopBar(modifier = Modifier.fillMaxHeight(0.1f),places.value) { placeName, lat,lng ->
+                            searchCity.value = placeName
+                            searchCityLat.value = lat
+                            searchCityLng.value = lng
                         }
                     }
 
@@ -78,6 +89,8 @@ class MainActivity : ComponentActivity() {
 
 
                 }) {
+
+            Log.d("place_callback", "App: retrieved values: place: ${searchCity.value}, latitude: ${searchCityLat.value}, longitude: ${searchCity.value}")
 
                 //navigation
 //            WeeklyWeather(weatherApiResponse, modifier = Modifier.fillMaxHeight(0.8f))
