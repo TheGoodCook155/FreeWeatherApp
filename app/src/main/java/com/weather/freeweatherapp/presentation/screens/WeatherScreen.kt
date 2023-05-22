@@ -3,6 +3,7 @@ package com.weather.freeweatherapp.presentation.screens
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Home
@@ -34,10 +36,13 @@ import com.weather.freeweatherapp.presentation.viewmodel.HourlyViewModel
 
 @Composable
 fun WeatherScreen(viewModel: HourlyViewModel){
-//
-//    ShowWeatherToday()
-//
-//    ShowNextDays()
+
+    Column(modifier = Modifier.wrapContentHeight().fillMaxWidth().background(Color.Yellow)) {
+        Text(text = "Weather Screen")
+
+    }
+
+
 
 }
 

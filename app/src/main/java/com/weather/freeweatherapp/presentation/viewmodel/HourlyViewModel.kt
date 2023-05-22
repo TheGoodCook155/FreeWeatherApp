@@ -25,18 +25,18 @@ class HourlyViewModel @Inject constructor(
 
     init {
         Log.d("retrieved_data", ": ")
-        getHourlyWeather()
+        getHourlyWeather("52.52","13.41",2,"temperature_2m,windspeed_10m,windspeed_180m,relativehumidity_2m,snowfall,rain,winddirection_180m")
         getPlaces()
     }
 
-    fun getHourlyWeather(){
+    fun getHourlyWeather(latitude: String, longitude: String, days: Int, params: String?){
 
             data.value.isLoading = true
 
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
-                val retrievedData = repository.retrieveHourlyWeather("52.52","13.41",2,"temperature_2m,windspeed_10m,windspeed_180m,relativehumidity_2m,snowfall,rain,winddirection_180m")
+                val retrievedData = repository.retrieveHourlyWeather(latitude,longitude,7,"temperature_2m,windspeed_10m,windspeed_180m,relativehumidity_2m,snowfall,rain,winddirection_180m")
                 data.value.data = retrievedData
             }catch (e: Exception){
                 data.value.exception = e

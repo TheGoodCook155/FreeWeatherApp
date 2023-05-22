@@ -1,11 +1,8 @@
 package com.weather.freeweatherapp.presentation.screencomponents
 
 import android.util.Log
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -23,13 +20,14 @@ import androidx.navigation.NavHostController
 import com.weather.freeweatherapp.data.model.WeatherAPIResponse
 import com.weather.freeweatherapp.presentation.bottommenu.BottomMenuItem
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -37,18 +35,20 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.toSize
 import com.weather.freeweatherapp.data.model.PlacesListItem
+import com.weather.freeweatherapp.presentation.navigation.SettingsScreen
+import com.weather.freeweatherapp.presentation.navigation.WeatherScreen
 
 
 @Composable
-fun BottomNavigation(controller: NavHostController?, modifier: Modifier = Modifier) {
+fun BottomNavigation(controller: NavHostController, modifier: Modifier = Modifier) {
 
     val bottomMenuItemsList = prepareBottomMenu()
 
     val selectedItem = remember {
-        mutableStateOf("Breeds")
+        mutableStateOf("Weather")
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.wrapContentHeight().fillMaxWidth()) {
 
         BottomNavigation(
             modifier = Modifier
@@ -56,7 +56,9 @@ fun BottomNavigation(controller: NavHostController?, modifier: Modifier = Modifi
                 .fillMaxWidth()
                 .padding(bottom = 0.dp, top = 5.dp)
                 .heightIn(70.dp, 90.dp)
-                .align(alignment = Alignment.BottomCenter)
+                .align(alignment = Alignment.BottomCenter),
+            elevation = 2.dp,
+            backgroundColor = MaterialTheme.colors.onBackground,
         ) {
 
             bottomMenuItemsList.forEach { menuItem ->
@@ -65,8 +67,8 @@ fun BottomNavigation(controller: NavHostController?, modifier: Modifier = Modifi
                     selected = (selectedItem.value == menuItem.label),
                     onClick = {
                         selectedItem.value = menuItem.label
-                        //                        val routeObjScreen = if (menuItem.label.equals("Weather")) WeatherScreen else SettingsScreen
-                        //                        controller.navigate(routeObjScreen.ROUTE_NAME)
+                        val routeObjScreen = if (menuItem.label.equals("Weather")) WeatherScreen else SettingsScreen
+                        controller.navigate(routeObjScreen.route)
                     },
 
                     selectedContentColor = Color.White,
@@ -106,85 +108,12 @@ fun prepareBottomMenu(): List<BottomMenuItem> {
     return bottomMenuItemsList
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TopBar(
     modifier: Modifier = Modifier,
     placesListItem: List<PlacesListItem>,
     cityCallback: (String,String,String) -> Unit
 ){
-
-//    val keyboardController = LocalSoftwareKeyboardController.current
-//    val focusRequester = remember {
-//        FocusRequester()
-//    }
-//
-//
-//    val hiddenTextField = remember {
-//        mutableStateOf(true)
-//    }
-//
-//
-//    val textFieldWidth = remember {
-//        Animatable(initialValue = 0f)
-//    }
-//
-//    LaunchedEffect(hiddenTextField.value) {
-//
-//        if (hiddenTextField.value){
-//
-//            textFieldWidth.animateTo(
-//                0f,
-//                animationSpec = tween(
-//                    durationMillis = 400,
-//                    easing = FastOutSlowInEasing
-//                )
-//            )
-//        }
-//
-//        if (!hiddenTextField.value){
-//
-//            textFieldWidth.animateTo(
-//                300f,
-//                animationSpec = tween(
-//                    durationMillis = 400,
-//                    easing = FastOutSlowInEasing
-//                )
-//            )
-//
-//        }
-//
-//    }
-//
-//    OutlinedTextField(value = searchCity.value,
-//        onValueChange = {
-//            searchCity.value = it
-//        },
-//        modifier = Modifier
-//            .padding(5.dp)
-//            .focusRequester(focusRequester),
-//        trailingIcon = {
-//
-//            if (searchCity.value.isNotBlank()){
-//                Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear icon",
-//                    modifier = Modifier
-//                        .width(50.dp)
-//                        .height(50.dp)
-//                        .padding(10.dp)
-//                        .clickable {
-//                            searchCity.value = ""
-//                        })
-//
-//            }
-//
-//        }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
-//        keyboardActions = KeyboardActions (
-//            onDone = {
-//                keyboardController?.hide()
-//                cityCallback(searchCity.value)
-//                focusRequester.freeFocus()
-//            })
-//    )
 
     AutoComplete(placesListItem = placesListItem){placeName,lat,lng ->
         Log.d("place_callback", "TopBar: ${placeName}, ${lat}, ${lng}")
@@ -199,22 +128,22 @@ fun TopBar(
 
 }
 
-@Composable
-fun WeeklyWeather(weatherApiResponse: WeatherAPIResponse, modifier: Modifier = Modifier){
-
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(top = 5.dp, bottom = 10.dp)
-        .verticalScroll(rememberScrollState())) {
-
-        repeat(weatherApiResponse.hourly.time.size/24){ index ->
-            CreateSingleDay(weatherApiResponse = weatherApiResponse,index)
-        }
-
-    }
-
-
-}
+//@Composable
+//fun WeeklyWeatherSection(){
+//
+//    Column(modifier = Modifier
+//        .fillMaxSize()
+//        .padding(top = 5.dp, bottom = 10.dp)
+//        .verticalScroll(rememberScrollState())) {
+//
+//        repeat(weatherApiResponse.hourly.time.size/24){ index ->
+//            CreateSingleDay(weatherApiResponse = weatherApiResponse,index)
+//        }
+//
+//    }
+//
+//
+//}
 
 @Composable
 fun CreateSingleDay(weatherApiResponse: WeatherAPIResponse, index: Int) {
@@ -228,27 +157,27 @@ fun AutoComplete(placesListItem: List<PlacesListItem>, placeCallBack: (String,St
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    var locationName by remember {
+    var locationName by rememberSaveable() {
         mutableStateOf("")
     }
 
-    var locationLatitude by remember {
+    var locationLatitude by rememberSaveable() {
         mutableStateOf("")
     }
 
-    var locationLongitude by remember {
+    var locationLongitude by rememberSaveable() {
         mutableStateOf("")
     }
 
-    val heightTextFields by remember {
+    val heightTextFields by remember() {
         mutableStateOf(55.dp)
     }
 
-    var textFieldSize by remember {
+    var textFieldSize by remember() {
         mutableStateOf(Size.Zero)
     }
 
-    var expanded by remember {
+    var expanded by rememberSaveable() {
         mutableStateOf(false)
     }
     val interactionSource = remember {
@@ -398,7 +327,7 @@ fun PlaceItems(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onSelect(title,lat,lng)
+                onSelect(title, lat, lng)
             }
             .padding(10.dp)
     ) {
@@ -408,95 +337,5 @@ fun PlaceItems(
 }
 
 
-//@OptIn(ExperimentalComposeUiApi::class)
-//@Composable
-//fun TopBar(
-//    searchCity: MutableState<String>,
-//    modifier: Modifier = Modifier,
-//    cityCallback: (String) -> Unit
-//){
-////    val  searchCity: MutableState<String> = remember {
-////        mutableStateOf("")
-////    }
-////    val cityCallback : (String) -> Unit = {""}
-//
-//    val keyboardController = LocalSoftwareKeyboardController.current
-//    val focusRequester = remember {
-//        FocusRequester()
-//    }
-//
-//
-//    val hiddenTextField = remember {
-//        mutableStateOf(true)
-//    }
-//
-//
-//    val textFieldWidth = remember {
-//        Animatable(initialValue = 0f)
-//    }
-//
-//    LaunchedEffect(hiddenTextField.value) {
-//
-//        if (hiddenTextField.value){
-//
-//            textFieldWidth.animateTo(
-//                0f,
-//                animationSpec = tween(
-//                    durationMillis = 400,
-//                    easing = FastOutSlowInEasing
-//                )
-//            )
-//        }
-//
-//        if (!hiddenTextField.value){
-//
-//            textFieldWidth.animateTo(
-//                300f,
-//                animationSpec = tween(
-//                    durationMillis = 400,
-//                    easing = FastOutSlowInEasing
-//                )
-//            )
-//
-//        }
-//
-//    }
-//
-//    OutlinedTextField(value = searchCity.value,
-//        onValueChange = {
-//            searchCity.value = it
-//        },
-//        modifier = Modifier
-//            .padding(5.dp)
-//            .focusRequester(focusRequester),
-//        trailingIcon = {
-//
-//            if (searchCity.value.isNotBlank()){
-//                Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear icon",
-//                    modifier = Modifier
-//                        .width(50.dp)
-//                        .height(50.dp)
-//                        .padding(10.dp)
-//                        .clickable {
-//                            searchCity.value = ""
-//                        })
-//
-//            }
-//
-//        }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
-//        keyboardActions = KeyboardActions (
-//            onDone = {
-//                keyboardController?.hide()
-//                cityCallback(searchCity.value)
-//                focusRequester.freeFocus()
-//            })
-//    )
-//
-//    Divider(modifier = Modifier.padding(top = 5.dp, bottom = 20.dp, start = 5.dp, end = 5.dp),
-//        color = Color.LightGray,
-//        thickness = 1.dp,
-//        startIndent = 2.dp)
-//
-//
-//}
+
 
