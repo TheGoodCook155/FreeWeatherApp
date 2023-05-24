@@ -1,6 +1,6 @@
 package com.weather.freeweatherapp.data.datasource
 
-import com.weather.freeweatherapp.data.model.PlacesListItem
+import com.weather.freeweatherapp.data.model.places.PlacesListItem
 import com.weather.freeweatherapp.data.service.LocationProvider
 import javax.inject.Inject
 

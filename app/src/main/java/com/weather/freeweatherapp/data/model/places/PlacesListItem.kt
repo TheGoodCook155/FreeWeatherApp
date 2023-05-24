@@ -1,4 +1,4 @@
-package com.weather.freeweatherapp.data.model
+package com.weather.freeweatherapp.data.model.places
 
 
 import com.google.gson.annotations.SerializedName

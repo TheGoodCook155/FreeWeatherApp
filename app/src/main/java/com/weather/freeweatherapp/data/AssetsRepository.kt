@@ -2,7 +2,7 @@ package com.weather.freeweatherapp.data
 
 import android.util.Log
 import com.weather.freeweatherapp.data.datasource.AssetsDataSource
-import com.weather.freeweatherapp.data.model.PlacesListItem
+import com.weather.freeweatherapp.data.model.places.PlacesListItem
 import javax.inject.Inject
 
 class AssetsRepository @Inject constructor(

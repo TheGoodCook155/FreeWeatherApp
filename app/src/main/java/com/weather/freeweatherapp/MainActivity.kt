@@ -23,11 +23,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.weather.freeweatherapp.data.model.PlacesListItem
+import com.weather.freeweatherapp.data.model.places.PlacesListItem
 import com.weather.freeweatherapp.presentation.navigation.Navigation
 import com.weather.freeweatherapp.presentation.screencomponents.BottomNavigation
 import com.weather.freeweatherapp.presentation.screencomponents.TopBar
-import com.weather.freeweatherapp.presentation.viewmodel.HourlyViewModel
+import com.weather.freeweatherapp.presentation.viewmodel.AppViewModel
 import com.weather.freeweatherapp.ui.theme.FreeWeatherAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             FreeWeatherAppTheme {
 
-                val viewModel: HourlyViewModel = viewModel()
+                val viewModel: AppViewModel = viewModel()
                 val navController = rememberNavController()
 
                 val data = viewModel.data.value
@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun App(
         places: MutableState<List<PlacesListItem>>,
-        viewModel: HourlyViewModel,
+        viewModel: AppViewModel,
         navController: NavHostController
     ) {
 
@@ -140,7 +140,7 @@ class MainActivity : ComponentActivity() {
                 .fillMaxWidth()
                 .fillMaxHeight(0.8f)
                 .background(Color.White)) {
-                Navigation(navHostController = navController)
+                Navigation(navHostController = navController, viewModel)
             }
 
 

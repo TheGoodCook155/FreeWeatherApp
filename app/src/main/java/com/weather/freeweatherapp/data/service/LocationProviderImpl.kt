@@ -2,8 +2,8 @@ package com.weather.freeweatherapp.data.service
 
 import android.util.Log
 import com.google.gson.Gson
-import com.weather.freeweatherapp.data.model.PlacesList
-import com.weather.freeweatherapp.data.model.PlacesListItem
+import com.weather.freeweatherapp.data.model.places.PlacesList
+import com.weather.freeweatherapp.data.model.places.PlacesListItem
 import java.io.IOException
 
 class LocationProviderImpl: LocationProvider {
@@ -22,7 +22,7 @@ class LocationProviderImpl: LocationProvider {
                 it.readText()
             }
 
-            list = gson.fromJson(json,PlacesList::class.java)
+            list = gson.fromJson(json, PlacesList::class.java)
 
             inputStream.close()
 
