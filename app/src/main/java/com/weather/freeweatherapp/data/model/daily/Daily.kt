@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Daily(
     @SerializedName("daily")
-    val daily: DailyMaxMinPrecipitations,
+    var daily: DailyMaxMinPrecipitations,
     @SerializedName("daily_units")
     val dailyUnits: DailyUnits,
     @SerializedName("elevation")

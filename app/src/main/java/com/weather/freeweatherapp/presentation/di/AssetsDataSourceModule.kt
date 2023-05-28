@@ -1,8 +1,7 @@
 package com.weather.freeweatherapp.presentation.di
 
-import android.app.Application
-import com.weather.freeweatherapp.data.datasource.AssetsDataSource
-import com.weather.freeweatherapp.data.datasource.AssetsDataSourceImpl
+import com.weather.freeweatherapp.data.datasource.ResourcesDataSource
+import com.weather.freeweatherapp.data.datasource.ResourcesDataSourceImpl
 import com.weather.freeweatherapp.data.service.LocationProvider
 import com.weather.freeweatherapp.data.service.LocationProviderImpl
 import dagger.Module
@@ -17,8 +16,8 @@ class AssetsDataSourceModule {
 
     @Provides
     @Singleton
-    fun providesAssetsDataSource(locationProvider: LocationProvider): AssetsDataSource{
-        return AssetsDataSourceImpl(locationProvider)
+    fun providesAssetsDataSource(locationProvider: LocationProvider): ResourcesDataSource{
+        return ResourcesDataSourceImpl(locationProvider)
     }
 
     @Provides

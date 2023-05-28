@@ -1,17 +1,17 @@
 package com.weather.freeweatherapp.data
 
 import android.util.Log
-import com.weather.freeweatherapp.data.datasource.AssetsDataSource
+import com.weather.freeweatherapp.data.datasource.ResourcesDataSource
 import com.weather.freeweatherapp.data.model.places.PlacesListItem
 import javax.inject.Inject
 
 class AssetsRepository @Inject constructor(
-    private val assetsDataSource: AssetsDataSource
+    private val resourcesDataSource: ResourcesDataSource
 ) {
 
    suspend fun getAllPlaces(): List<PlacesListItem>{
 
-       val places = assetsDataSource.providePlacesFromJson()
+       val places = resourcesDataSource.providePlacesFromJson()
 
        Log.d("places_cities", "AssetsRepository | getAllPlaces: ${places}")
 

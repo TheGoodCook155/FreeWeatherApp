@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,8 +22,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.weather.freeweatherapp.data.model.places.PlacesListItem
 import com.weather.freeweatherapp.presentation.navigation.Navigation
+import com.weather.freeweatherapp.presentation.navigation.WeatherScreen
 import com.weather.freeweatherapp.presentation.screencomponents.BottomNavigation
 import com.weather.freeweatherapp.presentation.screencomponents.TopBar
+import com.weather.freeweatherapp.presentation.screens.WeatherScreen
 import com.weather.freeweatherapp.presentation.viewmodel.AppViewModel
 import com.weather.freeweatherapp.ui.theme.FreeWeatherAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,7 +40,6 @@ class MainActivity : ComponentActivity() {
                 val viewModel: AppViewModel = viewModel()
                 val navController = rememberNavController()
 
-                val data = viewModel.data.value
                 val places = viewModel.places
 
 //                Log.d("retrieved_data", ": MainActivity: ${data}")
@@ -61,7 +59,7 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     @Composable
     fun App(
-        places: MutableState<List<PlacesListItem>>,
+        places: State<List<PlacesListItem>>,
         viewModel: AppViewModel,
         navController: NavHostController
     ) {
@@ -117,6 +115,8 @@ class MainActivity : ComponentActivity() {
                                 searchCityLat.value = lat
                                 searchCityLng.value = lng
                                 viewModel.getHourlyWeather(latitude = searchCityLat.value, searchCityLng.value,1,null)
+                                viewModel.getDailyWeather(latitude = searchCityLat.value, longitude = searchCityLng.value,null)
+                                navController.navigate(WeatherScreen.route)
                             }
 
                         }
@@ -133,7 +133,7 @@ class MainActivity : ComponentActivity() {
                 }) {
 
             Log.d("place_callback", "App: retrieved values: place: ${searchCity.value}, latitude: ${searchCityLat.value}, longitude: ${searchCityLng.value}")
-            Log.d("queried_data", "App: ${viewModel.data.value.data}")
+//            Log.d("queried_data", "App: ${viewModel.dataHourly.collectAsState()}")
                 //navigation
 
             Column(modifier = Modifier

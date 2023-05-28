@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.weather.freeweatherapp.data.model.daily.Daily
+import com.weather.freeweatherapp.data.model.hourly.WeatherAPIResponse
 import com.weather.freeweatherapp.presentation.screens.SettingsScreen
 import com.weather.freeweatherapp.presentation.screens.WeatherScreen
 import com.weather.freeweatherapp.presentation.viewmodel.AppViewModel
@@ -33,7 +35,10 @@ object SettingsScreen: Destinations{
 
 
 @Composable
-fun Navigation(navHostController: NavHostController, viewModel: AppViewModel){
+fun Navigation(
+    navHostController: NavHostController,
+    viewModel: AppViewModel,
+){
 
     NavHost(navController = navHostController, startDestination = WeatherScreen.route){
 

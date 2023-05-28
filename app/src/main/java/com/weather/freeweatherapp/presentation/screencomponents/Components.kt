@@ -1,5 +1,6 @@
 package com.weather.freeweatherapp.presentation.screencomponents
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,16 +28,23 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.toSize
+import com.weather.freeweatherapp.R
+import com.weather.freeweatherapp.data.model.daily.Daily
 import com.weather.freeweatherapp.data.model.places.PlacesListItem
 import com.weather.freeweatherapp.presentation.navigation.SettingsScreen
 import com.weather.freeweatherapp.presentation.navigation.WeatherScreen
@@ -136,8 +144,198 @@ fun TopBar(
 }
 
 
+
+@SuppressLint("StateFlowValueCalledInComposition", "SuspiciousIndentation")
 @Composable
-fun CreateSingleDayCard(weatherApiResponse: WeatherAPIResponse, index: Int) {
+fun WeatherToday(daily: Daily?) {
+
+
+    val isExpanded = remember{
+        mutableStateOf(true)
+    }
+
+    val height = remember {
+        mutableStateOf(330)
+    }
+
+    val windRotationValue = daily?.daily?.winddirection10mDominant?.getOrElse(0,{0})?.toFloat()
+
+        Card(modifier = Modifier
+            .padding(2.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+        ) {
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(height = height.value.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.Start
+                ) {
+
+
+//                    temperature2mMax=[23.7
+//                    temperature2mMin=[13.3
+//                    uvIndexMax=[7.7
+
+//                    precipitationHours=[8.0
+//                    showersSum=[3.0
+//                    winddirection10mDominant=[239
+
+
+                    //                    temperature2mMin=[13.3
+                    //                    temperature2mMin=[13.3
+
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.temperature),
+                            contentDescription = "temperature icon",
+                            modifier = Modifier
+                                .height(60.dp)
+                                .width(60.dp)
+                                .padding(start = 5.dp, end = 20.dp),
+                            contentScale = ContentScale.Fit
+                        )
+
+                        Text(
+                            text = "${daily?.daily?.temperature2mMin?.get(0)}°C - ${daily?.daily?.temperature2mMax?.getOrElse(0,{0})}°C",
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+
+//                    uvIndexMax=[7.7
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.sunny),
+                            contentDescription = "UV icon",
+                            modifier = Modifier
+                                .height(60.dp)
+                                .width(60.dp)
+                                .padding(start = 5.dp, end = 20.dp),
+                            contentScale = ContentScale.Fit
+                        )
+
+                        Text(
+                            text = "${daily?.daily?.uvIndexMax?.getOrElse(0,{0})}",
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+//            precipitationHours=[8.0
+//                    showersSum=[3.0
+//                    winddirection10mDominant=[239
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.wet),
+                            contentDescription = "precipitation hours",
+                            modifier = Modifier
+                                .height(60.dp)
+                                .width(60.dp)
+                                .padding(start = 5.dp, end = 20.dp),
+                            contentScale = ContentScale.Fit
+                        )
+
+                        Text(
+                            text = "${daily?.daily?.precipitationHours?.getOrElse(0,{0})} h",
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+//            showersSum=[3.0
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.rain_and_thunder),
+                            contentDescription = "Shower sum icon",
+                            modifier = Modifier
+                                .height(60.dp)
+                                .width(60.dp)
+                                .padding(start = 5.dp, end = 20.dp),
+                            contentScale = ContentScale.Fit
+                        )
+
+                        Text(
+                            text = "${daily?.daily?.showersSum?.getOrElse(0,{0})} mm",
+                            textAlign = TextAlign.Center
+                        )
+                    }
+
+                    //                    winddirection10mDominant=[239
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.wind),
+                            contentDescription = "Wind direction icon",
+                            modifier = Modifier
+                                .height(60.dp)
+                                .width(60.dp)
+                                .padding(start = 5.dp, end = 20.dp),
+                            contentScale = ContentScale.Fit
+                        )
+
+                        Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = "wind direction",
+                            modifier = Modifier
+                                .rotate(windRotationValue!!)
+                                .height(50.dp)
+                                .width(50.dp))
+                    }
+
+
+//Column with rows ends here
+                }
+
+                Column {
+                    val imageVector: ImageVector =
+                        if (isExpanded.value == true) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
+                    Icon(imageVector = imageVector, contentDescription = "Expand/Colapse icon",
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(50.dp)
+                            .clickable {
+                                Log.d("collapse_event", "WeatherToday: Clicked!")
+
+                                if (isExpanded.value) {
+                                    height.value = 0
+                                } else {
+                                    height.value = 330
+                                }
+                                isExpanded.value = !isExpanded.value
+                            })
+                }
+                //outer column ends here
+            }
+
+    }
+
 
 
 }
@@ -148,59 +346,12 @@ fun HourlyWeatherToday(weatherApiResponse: WeatherAPIResponse){
 
     //Alt + 248 °
 
-    /*
-    relatve humidity
-snowfall
-temperature
-time
-winddirection
-windspeed
-     */
-    /*
-    NetworkResult(data=WeatherAPIResponse(elevation=655.0, generationtimeMs=0.7129907608032227, hourly=Hourly(rain=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], relativehumidity2m=[92, 93, 94, 94, 94, 92, 84, 79, 71, 58, 53, 49, 44, 40, 40, 42, 43, 55, 68, 71, 80, 88, 87, 88, 90, 91, 91, 89, 89, 88, 78, 73, 65, 59, 53, 45, 42, 41, 43, 45, 62, 70, 73, 78, 85, 87, 86, 89, 93, 94, 95, 96, 96, 95, 87, 84, 76, 70, 62, 58, 53, 49, 49, 58, 67, 71, 78, 83, 89, 91, 92, 93, 93, 92, 92, 92, 92, 91, 81, 73, 66, 61, 56, 53, 49, 53, 61, 68, 72, 75, 79, 85, 92, 96, 95, 91, 88, 87, 86, 84, 82, 79, 75, 70, 63, 59, 58, 60, 61, 62, 62, 65, 71, 79, 85, 87, 86, 86, 86, 87, 87, 87, 87, 86, 83, 80, 77, 69, 66, 63, 60, 57, 55, 55, 57, 60, 66, 74, 81, 85, 87, 89, 90, 91, 92, 94, 95, 94, 88, 78, 70, 64, 60, 56, 52, 50, 47, 44, 42, 42, 47, 55, 61, 63, 63, 64, 66, 68], snowfall=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], temperature2m=[12.3, 11.8, 11.4, 11.0, 10.8, 12.3, 14.3, 15.9, 17.5, 19.2, 20.2, 21.1, 21.7, 22.1, 21.7, 21.4, 21.0, 19.7, 17.6, 16.8, 15.2, 13.8, 13.4, 13.0, 12.5, 12.0, 11.8, 11.8, 11.9, 13.2, 15.7, 17.5, 19.3, 21.0, 21.5, 22.2, 22.8, 22.7, 22.6, 22.2, 20.3, 18.8, 17.9, 16.8, 15.4, 14.7, 14.6, 13.9, 13.1, 12.9, 12.5, 12.0, 12.0, 13.7, 15.8, 17.4, 18.8, 19.7, 20.5, 21.1, 21.7, 22.0, 21.5, 20.2, 19.3, 18.6, 17.5, 16.6, 15.7, 15.2, 14.6, 14.0, 13.6, 13.2, 12.8, 12.6, 12.6, 14.2, 16.2, 17.6, 18.8, 19.7, 20.5, 21.3, 21.5, 21.1, 20.3, 19.5, 18.8, 18.1, 17.3, 16.4, 15.5, 14.7, 14.2, 13.7, 13.4, 13.2, 13.1, 13.4, 14.2, 15.5, 16.6, 17.6, 18.4, 19.2, 19.8, 20.2, 20.4, 20.3, 19.9, 19.3, 18.4, 17.4, 16.5, 15.9, 15.5, 15.1, 14.6, 14.1, 13.7, 13.3, 12.9, 13.0, 13.9, 15.2, 16.2, 17.5, 18.5, 19.3, 20.1, 20.7, 21.1, 21.3, 21.3, 20.9, 19.9, 18.5, 17.3, 16.5, 15.9, 15.3, 14.7, 14.3, 13.8, 13.2, 12.6, 12.5, 13.3, 14.6, 15.8, 16.7, 17.5, 18.2, 19.0, 19.7, 20.2, 20.4, 20.5, 20.3, 19.6, 18.7, 17.8, 17.1, 16.5, 15.9, 15.2, 14.6], time=[2023-05-23T00:00, 2023-05-23T01:00, 2023-05-23T02:00, 2023-05-23T03:00, 2023-05-23T04:00, 2023-05-23T05:00, 2023-05-23T06:00, 2023-05-23T07:00, 2023-05-23T08:00, 2023-05-23T09:00, 2023-05-23T10:00, 2023-05-23T11:00, 2023-05-23T12:00, 2023-05-23T13:00, 2023-05-23T14:00, 2023-05-23T15:00, 2023-05-23T16:00, 2023-05-23T17:00, 2023-05-23T18:00, 2023-05-23T19:00, 2023-05-23T20:00, 2023-05-23T21:00, 2023-05-23T22:00, 2023-05-23T23:00, 2023-05-24T00:00, 2023-05-24T01:00, 2023-05-24T02:00, 2023-05-24T03:00
-     */
 
-//    val weatherAPIResponse = WeatherAPIResponse(
-//        elevation=655.0,
-//        generationtimeMs=0.7129907608032227,
-//        hourly= Hourly(rain = listOf(12.3,12.3,12.3,12.3,12.3,12.3,12.3,12.3,12.3,12.3),
-//            relativehumidity2m = listOf(55,55,55,55,55,55,55,55,55,),
-//            snowfall = listOf(0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1),
-//            temperature2m= listOf( 12.3, 11.8, 11.4, 11.0, 10.8, 12.3, 14.3, 15.9),
-//            time = listOf("2023-05-23T00:00", "2023-05-23T01:00", "2023-05-23T02:00", "2023-05-23T03:00", "2023-05-23T04:00", "2023-05-23T05:00", "2023-05-23T06:00", "2023-05-23T07:00"), winddirection180m = listOf(12,200,340,67,237,45,120,155,188), windspeed10m = listOf(12.0,200.0,340.4,67.2,237.4,45.4,120.4,155.4,188.4)
-//        , windspeed180m = listOf(12.1,12.3, 11.8, 11.4, 11.0, 10.8, 12.3, 14.3, 15.9)
-//        ),
-//        hourlyUnits = HourlyUnits("","","","","","","",""),
-//        latitude = 12.2,
-//        longitude = 13.3,
-//        timezone = "",
-//        timezoneAbbreviation = "",
-//        utcOffsetSeconds = 1,
-//
-//    )
-
-    /*
-                                Text(text = "Temperature: ${
-                                weatherApiResponse.hourly.temperature2m.get(
-                                    index
-                                )}°C")
-
-                            Text("Rain: ${weatherApiResponse.hourly.rain.get(index)}mm")
-
-                            Text(text = "Relative humidity: ${
-                                weatherApiResponse.hourly.relativehumidity2m.get(
-                                    index
-                                )}%" )
-
-                            Text(text = "Snowfall: ${weatherApiResponse.hourly.snowfall.get(index)}mm")
-
-                            Text(text = "Wind speed: ${weatherApiResponse.hourly.windspeed10m.get(index)}km/h")
-     */
+//    if (weatherApiResponse.value.isLoading == true) {
+//        CircularProgressIndicator()
+//    }else{
 
 
-    if (weatherApiResponse == null) {
-        Box{}
-    }else{
 
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
@@ -212,10 +363,10 @@ windspeed
                 listState.scrollToItem(0)
             }
 
-            items(weatherApiResponse.hourly.time.size){ index ->
+            //weatherApiResponse.hourly.time.size
+                   items(weatherApiResponse.hourly?.time?.size!!){ index ->
 
                 val windRotationValue = weatherApiResponse.hourly.winddirection180m.get(index).toFloat()
-
 
                 Card(modifier = Modifier
                     .padding(5.dp)
@@ -281,7 +432,7 @@ windspeed
 
         }
 
-    }
+//    }
 
 
 }
