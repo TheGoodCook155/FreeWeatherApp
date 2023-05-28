@@ -2,11 +2,10 @@ package com.weather.freeweatherapp.presentation.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.weather.freeweatherapp.data.AssetsRepository
+import com.weather.freeweatherapp.data.ResourceDataSourceRepository
 import com.weather.freeweatherapp.data.RemoteDataSourceRepository
 import com.weather.freeweatherapp.data.constants.Constants
 import com.weather.freeweatherapp.data.model.daily.Daily
@@ -16,16 +15,13 @@ import com.weather.freeweatherapp.data.wrapper.NetworkResult
 import com.weather.freeweatherapp.data.wrapper.NetworkResultDaily
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val repository: RemoteDataSourceRepository,
-    private val assetsRepository: AssetsRepository
+    private val resourceDataSourceRepository: ResourceDataSourceRepository
     ): ViewModel() {
 
     val dataHourly : MutableState<NetworkResult<WeatherAPIResponse,Boolean,Exception>> = mutableStateOf(NetworkResult(null,true,Exception()))
@@ -52,7 +48,7 @@ class AppViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
-                val retrievedData = repository.retrieveHourlyWeather(latitude,longitude,daysToShow,Constants.HOURLY_PARAM)
+                val retrievedData = repository.retrieveHourlyWeather(latitude,longitude,days,params!!)
                 dataHourly.value.data = retrievedData.data
             }catch (e: Exception){
                 dataHourly.value.exception = e
@@ -93,7 +89,7 @@ class AppViewModel @Inject constructor(
 
         viewModelScope.launch(Dispatchers.IO) {
 
-            val data = assetsRepository.getAllPlaces()
+            val data = resourceDataSourceRepository.getAllPlaces()
             places.value = data
             Log.d("places_cities", "ViewModel | getPlaces | getFirstElement: ${places.value.get(0)}")
 

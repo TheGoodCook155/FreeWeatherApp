@@ -2,6 +2,7 @@ package com.weather.freeweatherapp.presentation.screencomponents
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.animation.Animatable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -21,6 +22,8 @@ import androidx.navigation.NavHostController
 import com.weather.freeweatherapp.data.model.hourly.WeatherAPIResponse
 import com.weather.freeweatherapp.presentation.bottommenu.BottomMenuItem
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.lazy.LazyColumn
@@ -73,7 +76,7 @@ fun BottomNavigation(controller: NavHostController, modifier: Modifier = Modifie
                 .heightIn(70.dp, 90.dp)
                 .align(alignment = Alignment.BottomCenter),
             elevation = 2.dp,
-            backgroundColor = MaterialTheme.colors.onBackground,
+            backgroundColor = MaterialTheme.colors.secondary,
         ) {
 
             bottomMenuItemsList.forEach { menuItem ->
@@ -87,7 +90,7 @@ fun BottomNavigation(controller: NavHostController, modifier: Modifier = Modifie
                     },
 
                     selectedContentColor = Color.White,
-                    unselectedContentColor = MaterialTheme.colors.secondary,
+                    unselectedContentColor = MaterialTheme.colors.primaryVariant,
                     icon = {
                         val icon =
                             if (menuItem.iconMapper.equals("Icons.Outlined.List")) Icons.Outlined.List else Icons.Outlined.Info
@@ -145,7 +148,9 @@ fun TopBar(
 
 
 
-@SuppressLint("StateFlowValueCalledInComposition", "SuspiciousIndentation")
+@SuppressLint("StateFlowValueCalledInComposition", "SuspiciousIndentation",
+    "UnusedMaterialScaffoldPaddingParameter"
+)
 @Composable
 fun WeatherToday(daily: Daily?) {
 
@@ -154,207 +159,229 @@ fun WeatherToday(daily: Daily?) {
         mutableStateOf(true)
     }
 
-    val height = remember {
-        mutableStateOf(330)
-    }
+//    val height = remember {
+//        mutableStateOf(330)
+//    }
 
     val windRotationValue = daily?.daily?.winddirection10mDominant?.getOrElse(0,{0})?.toFloat()
 
-        Card(modifier = Modifier
-            .padding(2.dp)
-            .fillMaxWidth()
-            .wrapContentHeight()
-        ) {
+    val height = remember {
+        androidx.compose.animation.core.Animatable(330f)
+    }
 
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    LaunchedEffect(isExpanded.value) {
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(height = height.value.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start
-                ) {
+        if (isExpanded.value){
+
+            height.animateTo(
+                330f,
+                animationSpec = tween(
+                    durationMillis = 400,
+                    easing = FastOutSlowInEasing
+                )
+            )
+        }
+
+        if (!isExpanded.value){
+
+            height.animateTo(
+                0f,
+                animationSpec = tween(
+                    durationMillis = 400,
+                    easing = FastOutSlowInEasing
+                )
+            )
+
+        }
+
+    }
 
 
-//                    temperature2mMax=[23.7
-//                    temperature2mMin=[13.3
-//                    uvIndexMax=[7.7
+            Card(modifier = Modifier
+                .padding(start = 5.dp, end = 5.dp)
+                .fillMaxWidth()
+                .wrapContentHeight(),
+                backgroundColor = MaterialTheme.colors.primarySurface,
+                contentColor = MaterialTheme.colors.onBackground
+            ) {
 
-//                    precipitationHours=[8.0
-//                    showersSum=[3.0
-//                    winddirection10mDominant=[239
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-
-                    //                    temperature2mMin=[13.3
-                    //                    temperature2mMin=[13.3
-
-
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .wrapContentHeight(),
-                        verticalAlignment = Alignment.CenterVertically
+                            .height(height = height.value.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.temperature),
-                            contentDescription = "temperature icon",
-                            modifier = Modifier
-                                .height(60.dp)
-                                .width(60.dp)
-                                .padding(start = 5.dp, end = 20.dp),
-                            contentScale = ContentScale.Fit
-                        )
 
-                        Text(
-                            text = "${daily?.daily?.temperature2mMin?.get(0)}°C - ${daily?.daily?.temperature2mMax?.getOrElse(0,{0})}°C",
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.temperature),
+                                contentDescription = "temperature icon",
+                                modifier = Modifier
+                                    .height(60.dp)
+                                    .width(60.dp)
+                                    .padding(start = 5.dp, end = 20.dp),
+                                contentScale = ContentScale.Fit
+                            )
+
+                            Text(
+                                text = "${daily?.daily?.temperature2mMin?.get(0)}°C - ${daily?.daily?.temperature2mMax?.getOrElse(0,{0})}°C",
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
 
 //                    uvIndexMax=[7.7
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.sunny),
-                            contentDescription = "UV icon",
+                        Row(
                             modifier = Modifier
-                                .height(60.dp)
-                                .width(60.dp)
-                                .padding(start = 5.dp, end = 20.dp),
-                            contentScale = ContentScale.Fit
-                        )
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.sunny),
+                                contentDescription = "UV icon",
+                                modifier = Modifier
+                                    .height(60.dp)
+                                    .width(60.dp)
+                                    .padding(start = 5.dp, end = 20.dp),
+                                contentScale = ContentScale.Fit
+                            )
 
-                        Text(
-                            text = "${daily?.daily?.uvIndexMax?.getOrElse(0,{0})}",
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                            Text(
+                                text = "${daily?.daily?.uvIndexMax?.getOrElse(0,{0})}",
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
 //            precipitationHours=[8.0
 //                    showersSum=[3.0
 //                    winddirection10mDominant=[239
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.wet),
-                            contentDescription = "precipitation hours",
+                        Row(
                             modifier = Modifier
-                                .height(60.dp)
-                                .width(60.dp)
-                                .padding(start = 5.dp, end = 20.dp),
-                            contentScale = ContentScale.Fit
-                        )
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.wet),
+                                contentDescription = "precipitation hours",
+                                modifier = Modifier
+                                    .height(60.dp)
+                                    .width(60.dp)
+                                    .padding(start = 5.dp, end = 20.dp),
+                                contentScale = ContentScale.Fit
+                            )
 
-                        Text(
-                            text = "${daily?.daily?.precipitationHours?.getOrElse(0,{0})} h",
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                            Text(
+                                text = "${daily?.daily?.precipitationHours?.getOrElse(0,{0})} h",
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
 //            showersSum=[3.0
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.rain_and_thunder),
-                            contentDescription = "Shower sum icon",
+                        Row(
                             modifier = Modifier
-                                .height(60.dp)
-                                .width(60.dp)
-                                .padding(start = 5.dp, end = 20.dp),
-                            contentScale = ContentScale.Fit
-                        )
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.rain_and_thunder),
+                                contentDescription = "Shower sum icon",
+                                modifier = Modifier
+                                    .height(60.dp)
+                                    .width(60.dp)
+                                    .padding(start = 5.dp, end = 20.dp),
+                                contentScale = ContentScale.Fit
+                            )
 
-                        Text(
-                            text = "${daily?.daily?.showersSum?.getOrElse(0,{0})} mm",
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                            Text(
+                                text = "${daily?.daily?.showersSum?.getOrElse(0,{0})} mm",
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
-                    //                    winddirection10mDominant=[239
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.wind),
-                            contentDescription = "Wind direction icon",
+                        //                    winddirection10mDominant=[239
+                        Row(
                             modifier = Modifier
-                                .height(60.dp)
-                                .width(60.dp)
-                                .padding(start = 5.dp, end = 20.dp),
-                            contentScale = ContentScale.Fit
-                        )
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.wind),
+                                contentDescription = "Wind direction icon",
+                                modifier = Modifier
+                                    .height(60.dp)
+                                    .width(60.dp)
+                                    .padding(start = 5.dp, end = 20.dp),
+                                contentScale = ContentScale.Fit
+                            )
 
-                        Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = "wind direction",
-                            modifier = Modifier
-                                .rotate(windRotationValue!!)
-                                .height(50.dp)
-                                .width(50.dp))
-                    }
+                            Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = "wind direction",
+                                modifier = Modifier
+                                    .rotate(windRotationValue!!)
+                                    .height(50.dp)
+                                    .width(50.dp))
+                        }
 
 
 //Column with rows ends here
+                    }
+
+                    Column {
+                        val imageVector: ImageVector =
+                            if (isExpanded.value == true) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
+                        Icon(imageVector = imageVector, contentDescription = "Expand/Colapse icon",
+                            modifier = Modifier
+                                .height(50.dp)
+                                .width(50.dp)
+                                .clickable {
+                                    Log.d("collapse_event", "WeatherToday: Clicked!")
+
+//                                if (isExpanded.value) {
+//                                    height.value = 0
+//                                } else {
+//                                    height.value = 330
+//                                }
+                                    isExpanded.value = !isExpanded.value
+                                })
+                    }
+                    //outer column ends here
                 }
 
-                Column {
-                    val imageVector: ImageVector =
-                        if (isExpanded.value == true) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
-                    Icon(imageVector = imageVector, contentDescription = "Expand/Colapse icon",
-                        modifier = Modifier
-                            .height(50.dp)
-                            .width(50.dp)
-                            .clickable {
-                                Log.d("collapse_event", "WeatherToday: Clicked!")
+        }
 
-                                if (isExpanded.value) {
-                                    height.value = 0
-                                } else {
-                                    height.value = 330
-                                }
-                                isExpanded.value = !isExpanded.value
-                            })
-                }
-                //outer column ends here
-            }
 
-    }
+
+
 
 
 
 }
 
 //@Preview
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HourlyWeatherToday(weatherApiResponse: WeatherAPIResponse){
 
     //Alt + 248 °
 
 
-//    if (weatherApiResponse.value.isLoading == true) {
-//        CircularProgressIndicator()
-//    }else{
-
-
 
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
+
+    Scaffold(backgroundColor = MaterialTheme.colors.background) {
 
         LazyColumn(state = listState){
 
@@ -364,7 +391,7 @@ fun HourlyWeatherToday(weatherApiResponse: WeatherAPIResponse){
             }
 
             //weatherApiResponse.hourly.time.size
-                   items(weatherApiResponse.hourly?.time?.size!!){ index ->
+            items(weatherApiResponse.hourly?.time?.size!!){ index ->
 
                 val windRotationValue = weatherApiResponse.hourly.winddirection180m.get(index).toFloat()
 
@@ -372,6 +399,8 @@ fun HourlyWeatherToday(weatherApiResponse: WeatherAPIResponse){
                     .padding(5.dp)
                     .fillMaxWidth()
                     .wrapContentHeight(),
+                    backgroundColor = MaterialTheme.colors.primarySurface,
+                    contentColor = MaterialTheme.colors.onBackground,
                     shape = RoundedCornerShape(10.dp),
                     elevation = 5.dp
                 ) {
@@ -418,7 +447,7 @@ fun HourlyWeatherToday(weatherApiResponse: WeatherAPIResponse){
                                 verticalAlignment = Alignment.CenterVertically) {
                                 Text(text = "Wind direction: ")
 
-                                Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = "wind direction",
+                                Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = "wind direction",
                                     modifier = Modifier
                                         .rotate(windRotationValue)
                                         .height(50.dp)
@@ -432,11 +461,13 @@ fun HourlyWeatherToday(weatherApiResponse: WeatherAPIResponse){
 
         }
 
-//    }
+    }
+
 
 
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AutoComplete(placesListItem: List<PlacesListItem>, placeCallBack: (String, String, String) -> Unit) {
@@ -470,133 +501,138 @@ fun AutoComplete(placesListItem: List<PlacesListItem>, placeCallBack: (String, S
         MutableInteractionSource()
     }
 
-    // Location Field
-    Column(
-        modifier = Modifier
-            .padding(30.dp)
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = {
-                    expanded = false
-                }
-            )
-    ) {
-
-        Text(
-            modifier = Modifier.padding(start = 3.dp, bottom = 2.dp),
-            text = "Location",
-            fontSize = 16.sp,
-            color = Color.Black,
-            fontWeight = FontWeight.Medium
-        )
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(heightTextFields)
-                        .border(
-                            width = 1.8.dp,
-                            color = Color.Black,
-                            shape = RoundedCornerShape(15.dp)
-                        )
-                        .onGloballyPositioned { coordinates ->
-                            textFieldSize = coordinates.size.toSize()
-                        },
-                    value = locationName,
-                    onValueChange = {
-                        locationName = it
-//                        placeCallBack(locationName,"","")
-                        expanded = true
-                    },
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        cursorColor = Color.Black
-                    ),
-                    textStyle = TextStyle(
-                        color = Color.Black,
-                        fontSize = 16.sp
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done
-                    ),
-                    singleLine = true,
-                    trailingIcon = {
-                        IconButton(onClick = { expanded = !expanded }) {
-                            Icon(
-                                modifier = Modifier.size(24.dp),
-                                imageVector = Icons.Rounded.KeyboardArrowDown,
-                                contentDescription = "arrow",
-                                tint = Color.Black
-                            )
-                        }
-                    },
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            placeCallBack(locationName,locationLatitude,locationLongitude)
-                            Log.d("place_callback", "AutoComplete: onDone called, callback activated: category: name: ${locationName}, latitude:  ${locationLatitude}, longitude: ${locationLongitude}")
-                            keyboardController?.hide()
-                        }
-                    )
+        // Location Field
+        Column(
+            modifier = Modifier
+                .padding(30.dp)
+                .fillMaxWidth()
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = {
+                        expanded = false
+                    }
                 )
-            }
+        ) {
 
-            AnimatedVisibility(visible = expanded) {
-                Card(
-                    modifier = Modifier
-                        .padding(horizontal = 5.dp)
-                        .width(textFieldSize.width.dp),
-                    elevation = 15.dp,
-                    shape = RoundedCornerShape(10.dp)
-                ) {
+            Text(
+                modifier = Modifier.padding(start = 3.dp, bottom = 2.dp),
+                text = "Location",
+                fontSize = 16.sp,
+                color = Color.Black,
+                fontWeight = FontWeight.Medium
+            )
 
-                    LazyColumn(
-                        modifier = Modifier.heightIn(max = 150.dp),
+            Column(modifier = Modifier.fillMaxWidth()) {
+
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(heightTextFields)
+                            .border(
+                                width = 1.8.dp,
+                                color = Color.Black,
+                                shape = RoundedCornerShape(15.dp)
+                            )
+                            .onGloballyPositioned { coordinates ->
+                                textFieldSize = coordinates.size.toSize()
+                            },
+                        value = locationName,
+                        onValueChange = {
+                            locationName = it
+                            expanded = true
+                        },
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            cursorColor = Color.Black
+                        ),
+                        textStyle = TextStyle(
+                            color = Color.Black,
+                            fontSize = 16.sp
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+                        singleLine = true,
+                        trailingIcon = {
+                            IconButton(onClick = { expanded = !expanded }) {
+                                Icon(
+                                    modifier = Modifier.size(24.dp),
+                                    imageVector = Icons.Rounded.KeyboardArrowDown,
+                                    contentDescription = "arrow",
+                                    tint = Color.Black
+                                )
+                            }
+                        },
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                placeCallBack(locationName,locationLatitude,locationLongitude)
+                                Log.d("place_callback", "AutoComplete: onDone called, callback activated: category: name: ${locationName}, latitude:  ${locationLatitude}, longitude: ${locationLongitude}")
+                                keyboardController?.hide()
+                            }
+                        )
+                    )
+                }
+
+                AnimatedVisibility(visible = expanded) {
+                    Card(
+                        modifier = Modifier
+                            .padding(horizontal = 5.dp)
+                            .width(textFieldSize.width.dp),
+                        backgroundColor = MaterialTheme.colors.background,
+                        contentColor = Color.Black,
+                        elevation = 15.dp,
+                        shape = RoundedCornerShape(10.dp)
                     ) {
 
-                        if (locationName.isNotEmpty()) {
-                            items(
-                                placesListItem.filter {
-                                    it.name.lowercase()
-                                        .contains(locationName.lowercase()) || it.name.lowercase()
-                                        .contains("others")
+                        LazyColumn(
+                            modifier = Modifier.heightIn(max = 150.dp),
+                        ) {
+
+                            if (locationName.isNotEmpty()) {
+                                items(
+                                    placesListItem.filter {
+                                        it.name.lowercase()
+                                            .contains(locationName.lowercase()) || it.name.lowercase()
+                                            .contains("others")
+                                    }
+                                ) {
+                                    PlaceItems(title = "${it.name} - ${it.country}", lat = it.lat, lng = it.lng) { title,lat,lng ->
+                                        locationName = title
+                                        expanded = false
+                                        locationLatitude = lat
+                                        locationLongitude = lng
+                                    }
                                 }
-                            ) {
-                                PlaceItems(title = "${it.name} - ${it.country}", lat = it.lat, lng = it.lng) { title,lat,lng ->
-                                    locationName = title
-                                    expanded = false
-                                    locationLatitude = lat
-                                    locationLongitude = lng
+                            } else {
+                                items(
+                                    placesListItem
+                                ) {
+                                    PlaceItems(title = "${it.name} - ${it.country}", lat = it.lat, lng = it.lng) { title,lat,lng ->
+                                        locationName = title
+                                        expanded = false
+                                        locationLatitude = lat
+                                        locationLongitude = lng
+                                    }
                                 }
                             }
-                        } else {
-                            items(
-                                placesListItem
-                            ) {
-                                PlaceItems(title = "${it.name} - ${it.country}", lat = it.lat, lng = it.lng) { title,lat,lng ->
-                                    locationName = title
-                                    expanded = false
-                                    locationLatitude = lat
-                                    locationLongitude = lng
-                                }
-                            }
+
                         }
 
                     }
-
                 }
+
             }
 
         }
 
-    }
+
+
+
 
 
 }

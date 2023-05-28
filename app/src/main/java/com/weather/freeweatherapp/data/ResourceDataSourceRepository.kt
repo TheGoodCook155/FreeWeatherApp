@@ -5,7 +5,7 @@ import com.weather.freeweatherapp.data.datasource.ResourcesDataSource
 import com.weather.freeweatherapp.data.model.places.PlacesListItem
 import javax.inject.Inject
 
-class AssetsRepository @Inject constructor(
+class ResourceDataSourceRepository @Inject constructor(
     private val resourcesDataSource: ResourcesDataSource
 ) {
 

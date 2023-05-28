@@ -28,8 +28,7 @@ fun WeatherScreen(viewModel: AppViewModel){
 
     Column(modifier = Modifier
         .wrapContentHeight()
-        .fillMaxWidth()
-        .background(Color.Yellow)) {
+        .fillMaxWidth()) {
 
         WeatherToday(dailyWeather)
 

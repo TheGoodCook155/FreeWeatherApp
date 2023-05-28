@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
                     Column(modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .background(Color.Cyan)
+                        .background(MaterialTheme.colors.background)
                         ,
                         verticalArrangement = Arrangement.Top,
                         horizontalAlignment = Alignment.CenterHorizontally) {
@@ -139,7 +139,7 @@ class MainActivity : ComponentActivity() {
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.8f)
-                .background(Color.White)) {
+                .background(MaterialTheme.colors.background)) {
                 Navigation(navHostController = navController, viewModel)
             }
 
