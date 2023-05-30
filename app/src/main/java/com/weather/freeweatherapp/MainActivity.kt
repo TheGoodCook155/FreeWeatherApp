@@ -141,20 +141,35 @@ class MainActivity : ComponentActivity() {
                 },
                 bottomBar = {
 
+                    var isSnackbarShown by remember {
+                        mutableStateOf(false)
+                    }
+
+                    if (isConnected){
+                        isSnackbarShown = true
+                    }
+
                     Column(verticalArrangement = Arrangement.Bottom) {
 
                         if (!isConnected){
 
-                        LaunchedEffect(key1 = true){
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = "Check your internet connection",
-                                actionLabel = "Go to Settings",
-                                duration = SnackbarDuration.Indefinite
-                            ).run {
+                        LaunchedEffect(!isConnected){
+
+                            if (isSnackbarShown == false){
+
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = "Check your internet connection",
+                                    actionLabel = "Go to Settings",
+                                    duration = SnackbarDuration.Indefinite
+                                ).run {
                                     val wifiIntent = Intent(ACTION_WIFI_SETTINGS)
                                     context.startActivity(wifiIntent)
                                     scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
+                                    isSnackbarShown = true
+                                }
+
                             }
+
                         }
 
                         }else{
