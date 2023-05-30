@@ -6,6 +6,7 @@ import com.weather.freeweatherapp.data.model.daily.Daily
 import com.weather.freeweatherapp.data.model.hourly.WeatherAPIResponse
 import com.weather.freeweatherapp.data.wrapper.NetworkResult
 import com.weather.freeweatherapp.data.wrapper.NetworkResultDaily
+import retrofit2.Response
 import javax.inject.Inject
 
 class RemoteDataSourceRepository @Inject constructor(
@@ -42,6 +43,8 @@ class RemoteDataSourceRepository @Inject constructor(
     ): NetworkResult<WeatherAPIResponse,Boolean,Exception> {
 
         val response = remoteDataSource.getDailyParametersByTheHour(latitude,longitude, forecastDays,hourly)
+
+
 
         if (response.isSuccessful){
             response.body()?.let {result ->
