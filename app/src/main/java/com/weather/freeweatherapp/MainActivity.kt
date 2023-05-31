@@ -147,6 +147,8 @@ class MainActivity : ComponentActivity() {
 
                     if (isConnected){
                         isSnackbarShown = true
+                    }else{
+                        isSnackbarShown = false
                     }
 
                     Column(verticalArrangement = Arrangement.Bottom) {
