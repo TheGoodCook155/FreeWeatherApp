@@ -1,8 +1,7 @@
 package com.weather.freeweatherapp.presentation.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weather.freeweatherapp.data.ResourceDataSourceRepository
@@ -13,9 +12,13 @@ import com.weather.freeweatherapp.data.model.places.PlacesListItem
 import com.weather.freeweatherapp.data.model.hourly.WeatherAPIResponse
 import com.weather.freeweatherapp.data.wrapper.NetworkResult
 import com.weather.freeweatherapp.data.wrapper.NetworkResultDaily
+import com.weather.freeweatherapp.utils.networkstatus.ConnectionState
+import com.weather.freeweatherapp.utils.networkstatus.connectivityState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,12 +33,12 @@ class AppViewModel @Inject constructor(
 
     val places : MutableState<List<PlacesListItem>> = mutableStateOf(emptyList())
 
-
+    val isConnected: MutableState<Boolean> = mutableStateOf(false)
 
     private val daysToShow = 1// todo
 
     init {
-        Log.d("retrieved_data", ":ViewModel init ")
+        Log.d("viewModelInit", ":ViewModel init ")
         getHourlyWeather("52.52","13.41",daysToShow,Constants.HOURLY_PARAM)
         getDailyWeather("52.52","13.41",Constants.DAILY_PARAM)
         getPlaces()
@@ -43,25 +46,22 @@ class AppViewModel @Inject constructor(
 
     fun getHourlyWeather(latitude: String, longitude: String, days: Int, params: String?){
 
-            dataHourly.value.isLoading = true
+        dataHourly.value.isLoading = true
 
         viewModelScope.launch(Dispatchers.IO) {
 
             try {
                 val retrievedData = repository.retrieveHourlyWeather(latitude,longitude,days,params!!)
-                dataHourly.value.data = retrievedData.data
-            }catch (e: Exception){
-                dataHourly.value.exception = e
-            }
-            if (dataHourly.value.data?.hourly?.time?.isNotEmpty() == true) {
-                dataHourly.value.isLoading = false
-            }
-            Log.d("retrieved_data", "getHourlyWeather: Wrapper: ${dataHourly.value}\n")
-            Log.d("retrieved_data", ": HourlyViewModel: instance: ${dataHourly.value.data}")
-            Log.d("retrieved_data", ": HourlyViewModel: ${dataHourly.value.data}")
-        }
 
-        Log.d("retrieved_data", ": HourlyViewModel: ${dataHourly.value.data}")
+                dataHourly.value.data = retrievedData.data
+
+            }catch (e: Exception){
+                dataDaily.value.exception = Exception(e.message.toString())
+            }
+                dataHourly.value.isLoading = false
+
+            Log.d("retrieved_data_hourly", ": HourlyViewModel: ${dataHourly.value.data}")
+        }
 
     }
 
@@ -76,9 +76,8 @@ class AppViewModel @Inject constructor(
                 dataDaily.value.data = retrievedData.data
                 Log.d("retrieved_data_daily", "getHourlyWeather: Wrapper: ${dataDaily.value.data}\n")
             }catch (e: Exception){
-                dataDaily.value.exception = e
+                dataDaily.value.exception = Exception(e.message.toString())
             }
-
             dataDaily.value.isLoading = false
         }
         Log.d("retrieved_data_daily", ": HourlyViewModel: Exception ${dataDaily.value.exception.toString()}")

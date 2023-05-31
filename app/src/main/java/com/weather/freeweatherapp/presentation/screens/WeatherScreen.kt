@@ -1,9 +1,12 @@
 package com.weather.freeweatherapp.presentation.screens
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -12,42 +15,44 @@ import com.weather.freeweatherapp.presentation.screencomponents.HourlyWeatherTod
 import com.weather.freeweatherapp.presentation.screencomponents.WeatherToday
 import com.weather.freeweatherapp.presentation.viewmodel.AppViewModel
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "SuspiciousIndentation")
 @Composable
 fun WeatherScreen(viewModel: AppViewModel){
 
-    var dailyWeather = viewModel.dataDaily.value.data
+    val dailyWeather = viewModel.dataDaily.value.data
 
-    var hourlyWeather = viewModel.dataHourly.value.data
+    val hourlyWeather = viewModel.dataHourly.value.data
 
+    Log.d("hourly_Weather", "WeatherScreen: hourlyWeather : ${hourlyWeather}")
 
-    Log.d("dailyWeather_recompose", "WeatherScreen: ${dailyWeather!!.daily.temperature2mMax.get(0)}")
-
-
-//    val hourlyWeather = viewModel.dataHourly.collectAsState(initial = null)
-//    val dailyWeather = viewModel.dataDaily.collectAsState(initial = null)
 
     Column(modifier = Modifier
         .wrapContentHeight()
         .fillMaxWidth()) {
 
-        WeatherToday(dailyWeather)
+            WeatherToday(dailyWeather)
 
-        Spacer(modifier = Modifier
-            .height(10.dp)
-            .padding(bottom = 20.dp))
-        
-        HourlyWeatherToday(hourlyWeather!!)
+            Spacer(modifier = Modifier
+                .height(10.dp)
+                .padding(bottom = 20.dp))
 
-        
-        Divider(modifier = Modifier.height(1.dp),
+            HourlyWeatherToday(hourlyWeather)
+
+            }
+
+            Divider(modifier = Modifier.height(1.dp),
                 color = Color.LightGray,
                 thickness = 1.dp)
 
 
-    }
-
 
 
 }
+
+
+
+
+
+
 
 

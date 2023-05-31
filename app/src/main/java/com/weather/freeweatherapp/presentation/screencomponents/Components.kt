@@ -159,11 +159,8 @@ fun WeatherToday(daily: Daily?) {
         mutableStateOf(true)
     }
 
-//    val height = remember {
-//        mutableStateOf(330)
-//    }
 
-    val windRotationValue = daily?.daily?.winddirection10mDominant?.getOrElse(0,{0})?.toFloat()
+    val windRotationValue = daily?.daily?.winddirection10mDominant?.get(0)?.toFloat() ?: 0.0.toFloat()
 
     val height = remember {
         androidx.compose.animation.core.Animatable(330f)
@@ -232,7 +229,7 @@ fun WeatherToday(daily: Daily?) {
                             )
 
                             Text(
-                                text = "${daily?.daily?.temperature2mMin?.get(0)}°C - ${daily?.daily?.temperature2mMax?.getOrElse(0,{0})}°C",
+                                text = "${daily?.daily?.temperature2mMin?.get(0)?: "n/a"} °C - ${daily?.daily?.temperature2mMax?.get(0)?: "n/a"} °C",
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -256,7 +253,7 @@ fun WeatherToday(daily: Daily?) {
                             )
 
                             Text(
-                                text = "${daily?.daily?.uvIndexMax?.getOrElse(0,{0})}",
+                                text = "${daily?.daily?.uvIndexMax?.get(0)?: "n/a"}",
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -282,7 +279,7 @@ fun WeatherToday(daily: Daily?) {
                             )
 
                             Text(
-                                text = "${daily?.daily?.precipitationHours?.getOrElse(0,{0})} h",
+                                text = "${daily?.daily?.precipitationHours?.get(0)?: "n/a"} h",
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -305,7 +302,7 @@ fun WeatherToday(daily: Daily?) {
                             )
 
                             Text(
-                                text = "${daily?.daily?.showersSum?.getOrElse(0,{0})} mm",
+                                text = "${daily?.daily?.showersSum?.get(0)?: "n/a"} mm",
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -334,7 +331,6 @@ fun WeatherToday(daily: Daily?) {
                                     .width(50.dp))
                         }
 
-
 //Column with rows ends here
                     }
 
@@ -347,123 +343,160 @@ fun WeatherToday(daily: Daily?) {
                                 .width(50.dp)
                                 .clickable {
                                     Log.d("collapse_event", "WeatherToday: Clicked!")
-
-//                                if (isExpanded.value) {
-//                                    height.value = 0
-//                                } else {
-//                                    height.value = 330
-//                                }
                                     isExpanded.value = !isExpanded.value
                                 })
                     }
                     //outer column ends here
                 }
-
         }
-
-
-
-
-
-
 
 }
 
 //@Preview
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun HourlyWeatherToday(weatherApiResponse: WeatherAPIResponse){
+fun HourlyWeatherToday(weatherApiResponse: WeatherAPIResponse?){
 
     //Alt + 248 °
-
-
 
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
 
+    Log.d("hourly_Weather", "HourlyWeatherToday: data size: ${weatherApiResponse?.hourly?.time?.size}")
+
     Scaffold(backgroundColor = MaterialTheme.colors.background) {
 
-        LazyColumn(state = listState){
+        if (weatherApiResponse == null){
+            Log.d("hourly_Weather", "HourlyWeatherToday: weatherApiResponse null block")
+            Card(modifier = Modifier
+                .padding(5.dp)
+                .fillMaxWidth()
+                .wrapContentHeight(),
+                backgroundColor = MaterialTheme.colors.primarySurface,
+                contentColor = MaterialTheme.colors.onBackground,
+                shape = RoundedCornerShape(10.dp),
+                elevation = 5.dp
+            ) {
 
-            //scroll to first item when the view recomposes
-            coroutineScope.launch {
-                listState.scrollToItem(0)
-            }
+                Column {
 
-            //weatherApiResponse.hourly.time.size
-            items(weatherApiResponse.hourly?.time?.size!!){ index ->
+                    Column(modifier = Modifier
+                        .padding(top = 10.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.2f),
+                        horizontalAlignment = Alignment.CenterHorizontally) {
 
-                val windRotationValue = weatherApiResponse.hourly.winddirection180m.get(index).toFloat()
+                        val convertedDate = "n/a"
+                        //hour
+                        Text(text = "${convertedDate}",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold)
+                    }
+                    Column(modifier = Modifier
+                        .padding(start = 15.dp, bottom = 5.dp, end = 5.dp, top = 5.dp)
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.8f),
+                        horizontalAlignment = Alignment.Start) {
 
-                Card(modifier = Modifier
-                    .padding(5.dp)
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                    backgroundColor = MaterialTheme.colors.primarySurface,
-                    contentColor = MaterialTheme.colors.onBackground,
-                    shape = RoundedCornerShape(10.dp),
-                    elevation = 5.dp
-                ) {
+                        Text(text = "Temperature: n/a")
 
-                    Column {
+                        Text("Rain: n/a")
 
-                        Column(modifier = Modifier
-                            .padding(top = 10.dp)
-                            .fillMaxWidth()
-                            .fillMaxHeight(0.2f),
-                            horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = "Relative humidity: n/a" )
 
-                            val convertedDate = convertDate(weatherApiResponse.hourly.time.get(index))
-                            //hour
-                            Text(text = "${convertedDate.get(1)}, ${convertedDate.get(0)}",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.SemiBold)
-                        }
-                        Column(modifier = Modifier
-                            .padding(start = 15.dp, bottom = 5.dp, end = 5.dp, top = 5.dp)
-                            .fillMaxWidth()
-                            .fillMaxHeight(0.8f),
-                            horizontalAlignment = Alignment.Start) {
+                        Text(text = "Snowfall: n/a")
 
-                            Text(text = "Temperature: ${
-                                weatherApiResponse.hourly.temperature2m.getOrElse(
-                                    index,{0}
-                                )}°C")
+                        Text(text = "Wind speed: n/a")
 
-                            Text("Rain: ${weatherApiResponse.hourly.rain.getOrElse(index,{0})}mm")
+                        //wind direction
+                        Row(modifier = Modifier.padding(end = 20.dp),
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "Wind direction: ")
 
-                            Text(text = "Relative humidity: ${
-                                weatherApiResponse.hourly.relativehumidity2m.getOrElse(
-                                    index,{0}
-                                )}%" )
-
-                            Text(text = "Snowfall: ${weatherApiResponse.hourly.snowfall.getOrElse(index,{0})}mm")
-
-                            Text(text = "Wind speed: ${weatherApiResponse.hourly.windspeed10m.getOrElse(index,{0})}km/h")
-
-                            //wind direction
-                            Row(modifier = Modifier.padding(end = 20.dp),
-                                horizontalArrangement = Arrangement.SpaceAround,
-                                verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Wind direction: ")
-
-                                Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = "wind direction",
-                                    modifier = Modifier
-                                        .rotate(windRotationValue)
-                                        .height(50.dp)
-                                        .width(50.dp))
-                            }
+                            Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = "wind direction",
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .width(50.dp))
                         }
                     }
                 }
+            }
+        }else{
+            LazyColumn(state = listState){
+
+                //scroll to first item when the view recomposes
+                coroutineScope.launch {
+                    listState.scrollToItem(0)
+                }
+
+                //weatherApiResponse.hourly.time.size
+                items(weatherApiResponse.hourly?.time?.size!!){ index ->
+
+                    val windRotationValue = weatherApiResponse.hourly.winddirection180m.get(index).toFloat()?: 0.0.toFloat()
+
+                    Card(modifier = Modifier
+                        .padding(5.dp)
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                        backgroundColor = MaterialTheme.colors.primarySurface,
+                        contentColor = MaterialTheme.colors.onBackground,
+                        shape = RoundedCornerShape(10.dp),
+                        elevation = 5.dp
+                    ) {
+
+                        Column {
+
+                            Column(modifier = Modifier
+                                .padding(top = 10.dp)
+                                .fillMaxWidth()
+                                .fillMaxHeight(0.2f),
+                                horizontalAlignment = Alignment.CenterHorizontally) {
+
+                                val convertedDate = convertDate(weatherApiResponse.hourly.time.get(index))
+                                //hour
+                                Text(text = "${convertedDate.get(1)}, ${convertedDate.get(0)}",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold)
+                            }
+                            Column(modifier = Modifier
+                                .padding(start = 15.dp, bottom = 5.dp, end = 5.dp, top = 5.dp)
+                                .fillMaxWidth()
+                                .fillMaxHeight(0.8f),
+                                horizontalAlignment = Alignment.Start) {
+
+                                Text(text = "Temperature: ${weatherApiResponse.hourly.temperature2m.get(index)?: "n/a"} °C")
+
+                                Text("Rain: ${weatherApiResponse.hourly.rain.get(index)?: "n/a"}mm")
+
+                                Text(text = "Relative humidity: ${
+                                    weatherApiResponse.hourly.relativehumidity2m.get(index)?: "n/a"} %" )
+
+                                Text(text = "Snowfall: ${weatherApiResponse.hourly.snowfall.get(index)?: "n/a"} mm")
+
+                                Text(text = "Wind speed: ${weatherApiResponse.hourly.windspeed10m.get(index)?: "n/a"} km/h")
+
+                                //wind direction
+                                Row(modifier = Modifier.padding(end = 20.dp),
+                                    horizontalArrangement = Arrangement.SpaceAround,
+                                    verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = "Wind direction: ")
+
+                                    Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = "wind direction",
+                                        modifier = Modifier
+                                            .rotate(windRotationValue)
+                                            .height(50.dp)
+                                            .width(50.dp))
+                                }
+                            }
+                        }
+                    }
+
+                }
 
             }
-
         }
-
     }
-
-
 
 }
 
