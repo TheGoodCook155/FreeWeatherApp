@@ -47,7 +47,7 @@ fun Navigation(
         }
 
         composable(SettingsScreen.route){
-            SettingsScreen()
+            SettingsScreen(viewModel = viewModel)
         }
 
     }

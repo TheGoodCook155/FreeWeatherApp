@@ -339,8 +339,8 @@ fun WeatherToday(daily: Daily?) {
                             if (isExpanded.value == true) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
                         Icon(imageVector = imageVector, contentDescription = "Expand/Colapse icon",
                             modifier = Modifier
-                                .height(50.dp)
-                                .width(50.dp)
+                                .height(60.dp)
+                                .width(60.dp)
                                 .clickable {
                                     Log.d("collapse_event", "WeatherToday: Clicked!")
                                     isExpanded.value = !isExpanded.value
@@ -537,7 +537,7 @@ fun AutoComplete(placesListItem: List<PlacesListItem>, placeCallBack: (String, S
         // Location Field
         Column(
             modifier = Modifier
-                .padding(30.dp)
+                .padding(5.dp)
                 .fillMaxWidth()
                 .clickable(
                     interactionSource = interactionSource,
@@ -639,6 +639,7 @@ fun AutoComplete(placesListItem: List<PlacesListItem>, placeCallBack: (String, S
                                         expanded = false
                                         locationLatitude = lat
                                         locationLongitude = lng
+                                        placeCallBack(locationName,locationLatitude,locationLongitude)
                                     }
                                 }
                             } else {
@@ -650,6 +651,7 @@ fun AutoComplete(placesListItem: List<PlacesListItem>, placeCallBack: (String, S
                                         expanded = false
                                         locationLatitude = lat
                                         locationLongitude = lng
+                                        placeCallBack(locationName,locationLatitude,locationLongitude)
                                     }
                                 }
                             }
@@ -662,11 +664,6 @@ fun AutoComplete(placesListItem: List<PlacesListItem>, placeCallBack: (String, S
             }
 
         }
-
-
-
-
-
 
 }
 

@@ -1,7 +1,9 @@
 package com.weather.freeweatherapp.presentation.viewmodel
 
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weather.freeweatherapp.data.ResourceDataSourceRepository
