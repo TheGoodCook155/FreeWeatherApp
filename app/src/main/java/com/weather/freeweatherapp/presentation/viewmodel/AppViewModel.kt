@@ -6,9 +6,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.weather.freeweatherapp.data.DBRepository
 import com.weather.freeweatherapp.data.ResourceDataSourceRepository
 import com.weather.freeweatherapp.data.RemoteDataSourceRepository
 import com.weather.freeweatherapp.data.constants.Constants
+import com.weather.freeweatherapp.data.db.entity.DefaultLocation
 import com.weather.freeweatherapp.data.model.daily.Daily
 import com.weather.freeweatherapp.data.model.places.PlacesListItem
 import com.weather.freeweatherapp.data.model.hourly.WeatherAPIResponse
@@ -18,7 +20,7 @@ import com.weather.freeweatherapp.utils.networkstatus.ConnectionState
 import com.weather.freeweatherapp.utils.networkstatus.connectivityState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -26,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val repository: RemoteDataSourceRepository,
-    private val resourceDataSourceRepository: ResourceDataSourceRepository
+    private val resourceDataSourceRepository: ResourceDataSourceRepository,
+    private val dbRepository: DBRepository
     ): ViewModel() {
 
     val dataHourly : MutableState<NetworkResult<WeatherAPIResponse,Boolean,Exception>> = mutableStateOf(NetworkResult(null,true,Exception()))
@@ -35,14 +38,22 @@ class AppViewModel @Inject constructor(
 
     val places : MutableState<List<PlacesListItem>> = mutableStateOf(emptyList())
 
+    val defaultLocation: MutableState<DefaultLocation> = mutableStateOf(DefaultLocation(0,"Skopje","52.52","13.41"))
+
     val isConnected: MutableState<Boolean> = mutableStateOf(false)
 
     private val daysToShow = 1// todo
 
     init {
+
         Log.d("viewModelInit", ":ViewModel init ")
-        getHourlyWeather("52.52","13.41",daysToShow,Constants.HOURLY_PARAM)
-        getDailyWeather("52.52","13.41",Constants.DAILY_PARAM)
+        Log.d("default_location", ": defaultLocation: ${defaultLocation.value}")
+        getDefaultLocation()
+//        getHourlyWeather("52.52","13.41",daysToShow,Constants.HOURLY_PARAM)
+//        getDailyWeather("52.52","13.41",Constants.DAILY_PARAM)
+
+        getHourlyWeather(defaultLocation.value.lat,defaultLocation.value.lng,1,Constants.HOURLY_PARAM)
+        getDailyWeather(defaultLocation.value.lat,defaultLocation.value.lng,Constants.DAILY_PARAM)
         getPlaces()
     }
 
@@ -96,4 +107,43 @@ class AppViewModel @Inject constructor(
 
         }
     }
+
+    fun getDefaultLocation(): DefaultLocation{
+
+
+        Log.d("default_location", "getDefaultLocation: STARTED")
+        viewModelScope.launch {
+
+          dbRepository.getDefaultLocation().collect { location ->
+              Log.d("default_location", "AppViewModel | getDefaultLocation collector: ${location} ")
+              val defaultWhenNull = DefaultLocation(0, "Skopje", "52.52", "13.41")
+              if (location == null) {
+                  defaultLocation.value = defaultWhenNull
+                  Log.d(
+                      "default_location",
+                      "AppViewModel | defaultLocation.value == null, switched: ${defaultLocation.value.id}, ${defaultLocation.value.name}"
+                  )
+              } else {
+                  defaultLocation.value = location
+              }
+          }
+
+
+            Log.d("default_location", "AppViewModel | getDefaultLocation: NULL: ${defaultLocation.value.id}, ${defaultLocation.value.name}")
+        }
+
+
+        Log.d("default_location", "AppViewModel | getDefaultLocation: ENDS")
+
+               return defaultLocation.value
+    }
+
+    fun insertDefaultLocation(defaultLocation: DefaultLocation){
+
+        viewModelScope.launch {
+            dbRepository.insertDefaultLocation(defaultLocation = defaultLocation)
+        }
+
+    }
+
 }
